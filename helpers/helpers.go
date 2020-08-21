@@ -4,6 +4,8 @@ import (
 	"encoding/json"
 	"log"
 	"net/http"
+
+	"github.com/jinzhu/gorm"
 )
 
 type ErrResponse struct {
@@ -38,4 +40,10 @@ func PanicHandler(next http.Handler) http.Handler {
 		}()
 		next.ServeHTTP(w, r)
 	})
+}
+
+func ConnectDB() *gorm.DB {
+	db, err := gorm.Open("postgres", "host=127.0.0.1 port=5432 dbname=bankapp sslmode=disable")
+	HandleErr(err)
+	return db
 }
