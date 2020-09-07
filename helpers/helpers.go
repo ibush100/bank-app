@@ -6,6 +6,7 @@ import (
 	"net/http"
 
 	"github.com/jinzhu/gorm"
+	"golang.org/x/crypto/bcrypt"
 )
 
 type ErrResponse struct {
@@ -16,6 +17,13 @@ func HandleErr(err error) {
 	if err != nil {
 		panic(err.Error())
 	}
+}
+
+func HashAndSalt(password []byte) string {
+	hashed, err := bcrypt.GenerateFromPassword(password, bcrypt.MinCost)
+	HandleErr(err)
+
+	return string(hashed)
 }
 
 func WriteToJson(w http.ResponseWriter, i interface{}) {

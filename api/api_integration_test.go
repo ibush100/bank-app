@@ -18,7 +18,7 @@ type user struct {
 }
 
 func TestRegisterUser(t *testing.T) {
-	user := user{Email: "email@example.com", Username: "User", Password: "password123"}
+	user := user{Email: "fresh@example.com", Username: "User", Password: "password123"}
 	requestByte, _ := json.Marshal(user)
 	requestReader := bytes.NewReader(requestByte)
 	req, err := http.NewRequest("POST", "/register", requestReader)
@@ -32,7 +32,7 @@ func TestRegisterUser(t *testing.T) {
 }
 
 func TestLoginUser(t *testing.T) {
-	user := user{Email: "email@example.com", Password: "password123"}
+	user := user{Email: "fresh@example.com", Password: "password123"}
 	requestByte, _ := json.Marshal(user)
 	requestReader := bytes.NewReader(requestByte)
 	req, err := http.NewRequest("POST", "/login", requestReader)

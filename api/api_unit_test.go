@@ -17,3 +17,16 @@ func TestCreateUser(t *testing.T) {
 	assert.NotNil(addedUser.UserID)
 	assert.True(result)
 }
+
+func TestFindUser(t *testing.T) {
+	assert := assert.New(t)
+	result := FindUser("email@example.com")
+	assert.True(result > 1)
+}
+
+func TestPrepareToken(t *testing.T) {
+	assert := assert.New(t)
+	var id uint = 5124521
+	result := PrepareToken(id)
+	assert.NotNil(result)
+}

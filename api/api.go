@@ -8,7 +8,9 @@ import (
 	"io/ioutil"
 	"log"
 	"net/http"
+	"time"
 
+	"github.com/dgrijalva/jwt-go"
 	"github.com/google/uuid"
 	"github.com/gorilla/mux"
 	_ "github.com/jinzhu/gorm/dialects/postgres"
@@ -23,10 +25,12 @@ func readBody(r *http.Request) []byte {
 
 func createUser(username string, email string, password string) (interfaces.User, bool) {
 	userID := uuid.Must(uuid.NewRandom())
-	user := interfaces.User{UserID: userID, Username: username, Email: email, Password: password}
+	passwordHash := helpers.HashAndSalt([]byte(password))
+	user := interfaces.User{UserID: userID, Username: username, Email: email, Password: passwordHash}
 	db := helpers.ConnectDB()
 	db.AutoMigrate(&interfaces.User{})
 	db.Create(&user)
+	// need to clean up returning true
 	return user, true
 }
 
@@ -54,8 +58,44 @@ func loginUser(w http.ResponseWriter, r *http.Request) {
 	var formattedBody interfaces.User
 	err := json.Unmarshal(body, &formattedBody)
 	helpers.HandleErr(err)
-	w.WriteHeader(http.StatusCreated)
-	helpers.WriteToJson(w, formattedBody)
+	if isUserPresent(formattedBody.Email, formattedBody.Password) {
+		token := PrepareToken(formattedBody.ID)
+		w.WriteHeader(http.StatusCreated)
+		// create token
+		helpers.WriteToJson(w, token)
+	} else {
+		w.WriteHeader(http.StatusForbidden)
+	}
+
+}
+
+func isUserPresent(email string, password string) bool {
+	userResult := FindUser(email)
+	if userResult <= 0 {
+		return false
+	}
+	return true
+}
+
+func FindUser(email string) uint {
+	db := helpers.ConnectDB()
+	var user interfaces.User
+	//db.Table("users").Select("user_id").Where("email = ? ", email).First(&user.ID)
+	db.Where("email = ?", email).First(&user)
+
+	return user.ID
+}
+
+func PrepareToken(ID uint) string {
+	tokenContent := jwt.MapClaims{
+		"user_id": ID,
+		"expiry":  time.Now().Add(time.Minute * 60).Unix(),
+	}
+	jwtToken := jwt.NewWithClaims(jwt.GetSigningMethod("HS256"), tokenContent)
+	token, err := jwtToken.SignedString([]byte("TokenPassword"))
+	helpers.HandleErr(err)
+
+	return token
 }
 
 func StartApi() {
