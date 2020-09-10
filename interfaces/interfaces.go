@@ -11,6 +11,7 @@ type User struct {
 	Email    string
 	Username string
 	Password string
+	Balence  int
 }
 
 type Register struct {

@@ -30,3 +30,11 @@ func TestPrepareToken(t *testing.T) {
 	result := PrepareToken(id)
 	assert.NotNil(result)
 }
+
+func TestCheckPass(t *testing.T) {
+	assert := assert.New(t)
+	password := "password123"
+	email := "email@example.com"
+	result := CheckPass("password", email)
+	assert.True(result)
+}

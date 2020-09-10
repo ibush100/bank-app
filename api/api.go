@@ -14,7 +14,11 @@ import (
 	"github.com/google/uuid"
 	"github.com/gorilla/mux"
 	_ "github.com/jinzhu/gorm/dialects/postgres"
+	"golang.org/x/crypto/bcrypt"
 )
+
+// TODO
+// swtich marshal to encoder
 
 func readBody(r *http.Request) []byte {
 	body, err := ioutil.ReadAll(r.Body)
@@ -53,11 +57,13 @@ func index(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprintf(w, "Call successful dude")
 }
 
+// this will break until you put bcryt stuff in
 func loginUser(w http.ResponseWriter, r *http.Request) {
 	body := readBody(r)
 	var formattedBody interfaces.User
 	err := json.Unmarshal(body, &formattedBody)
 	helpers.HandleErr(err)
+	// check pass function
 	if isUserPresent(formattedBody.Email, formattedBody.Password) {
 		token := PrepareToken(formattedBody.ID)
 		w.WriteHeader(http.StatusCreated)
@@ -96,6 +102,17 @@ func PrepareToken(ID uint) string {
 	helpers.HandleErr(err)
 
 	return token
+}
+
+func CheckPass(password string, email string) bool {
+	db := helpers.ConnectDB()
+	var user interfaces.User
+	db.Where("email = ?", email).First(&user)
+	passCheck := bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(password))
+	if passCheck == bcrypt.ErrMismatchedHashAndPassword {
+		return false
+	}
+	return true
 }
 
 func StartApi() {
