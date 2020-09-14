@@ -44,3 +44,17 @@ func TestLoginUser(t *testing.T) {
 	handler.ServeHTTP(rr, req)
 	assert.Equal(t, 201, rr.Code, "that didn't work")
 }
+
+func TestLoginUserWrongPassword(t *testing.T) {
+	user := user{Email: "fresh@example.com", Password: "passwd123"}
+	requestByte, _ := json.Marshal(user)
+	requestReader := bytes.NewReader(requestByte)
+	req, err := http.NewRequest("POST", "/login", requestReader)
+	if err != nil {
+		helpers.HandleErr(err)
+	}
+	rr := httptest.NewRecorder()
+	handler := http.HandlerFunc(loginUser)
+	handler.ServeHTTP(rr, req)
+	assert.Equal(t, 403, rr.Code, "that didn't work")
+}

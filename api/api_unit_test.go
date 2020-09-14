@@ -35,6 +35,6 @@ func TestCheckPass(t *testing.T) {
 	assert := assert.New(t)
 	password := "password123"
 	email := "email@example.com"
-	result := CheckPass("password", email)
+	result := checkPass(password, email)
 	assert.True(result)
 }

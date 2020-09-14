@@ -52,6 +52,25 @@ func registerUser(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusNotFound)
 	}
 }
+
+func updateUser(w http.ResponseWriter, r *http.Request) {
+	body := readBody(r)
+	var formattedBody interfaces.User
+	err := json.Unmarshal(body, &formattedBody)
+	helpers.HandleErr(err)
+	// check pass function
+	if isUserPresent(formattedBody.Email) {
+		updateUserDetails()
+	} else {
+		w.WriteHeader(http.StatusForbidden)
+	}
+
+}
+
+func updateUserDetails() {
+
+}
+
 func index(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusOK)
 	fmt.Fprintf(w, "Call successful dude")
@@ -63,8 +82,8 @@ func loginUser(w http.ResponseWriter, r *http.Request) {
 	var formattedBody interfaces.User
 	err := json.Unmarshal(body, &formattedBody)
 	helpers.HandleErr(err)
-	// check pass function
-	if isUserPresent(formattedBody.Email, formattedBody.Password) {
+
+	if checkPass(formattedBody.Email, formattedBody.Password) {
 		token := PrepareToken(formattedBody.ID)
 		w.WriteHeader(http.StatusCreated)
 		// create token
@@ -75,7 +94,7 @@ func loginUser(w http.ResponseWriter, r *http.Request) {
 
 }
 
-func isUserPresent(email string, password string) bool {
+func isUserPresent(email string) bool {
 	userResult := FindUser(email)
 	if userResult <= 0 {
 		return false
@@ -104,7 +123,7 @@ func PrepareToken(ID uint) string {
 	return token
 }
 
-func CheckPass(password string, email string) bool {
+func checkPass(email string, password string) bool {
 	db := helpers.ConnectDB()
 	var user interfaces.User
 	db.Where("email = ?", email).First(&user)
@@ -119,7 +138,7 @@ func StartApi() {
 	router := mux.NewRouter()
 	router.Use(helpers.PanicHandler)
 	router.HandleFunc("/", index)
-	router.HandleFunc("/login", registerUser).Methods("POST")
+	router.HandleFunc("/login", loginUser).Methods("POST")
 	router.HandleFunc("/register", registerUser).Methods("POST")
 	fmt.Println("App is working on port :3000")
 	log.Fatal(http.ListenAndServe(":3000", router))
