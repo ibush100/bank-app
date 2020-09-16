@@ -3,6 +3,7 @@ package api
 import (
 	"bank-app/helpers"
 	"bank-app/interfaces"
+	"bank-app/users"
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
@@ -11,7 +12,6 @@ import (
 	"time"
 
 	"github.com/dgrijalva/jwt-go"
-	"github.com/google/uuid"
 	"github.com/gorilla/mux"
 	_ "github.com/jinzhu/gorm/dialects/postgres"
 	"golang.org/x/crypto/bcrypt"
@@ -27,24 +27,13 @@ func readBody(r *http.Request) []byte {
 	return body
 }
 
-func createUser(username string, email string, password string) (interfaces.User, bool) {
-	userID := uuid.Must(uuid.NewRandom())
-	passwordHash := helpers.HashAndSalt([]byte(password))
-	user := interfaces.User{UserID: userID, Username: username, Email: email, Password: passwordHash}
-	db := helpers.ConnectDB()
-	db.AutoMigrate(&interfaces.User{})
-	db.Create(&user)
-	// need to clean up returning true
-	return user, true
-}
-
 func registerUser(w http.ResponseWriter, r *http.Request) {
 	body := readBody(r)
 
 	var fomattedUser interfaces.Register
 	err := json.Unmarshal(body, &fomattedUser)
 	helpers.HandleErr(err)
-	registerUser, result := createUser(fomattedUser.Username, fomattedUser.Email, fomattedUser.Password)
+	registerUser, result := users.CreateUser(fomattedUser.Username, fomattedUser.Email, fomattedUser.Password)
 	if result {
 		w.WriteHeader(http.StatusCreated)
 		helpers.WriteToJson(w, registerUser)
@@ -53,21 +42,66 @@ func registerUser(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func updateUser(w http.ResponseWriter, r *http.Request) {
+func updateUserEmail(w http.ResponseWriter, r *http.Request) {
 	body := readBody(r)
-	var formattedBody interfaces.User
+	var formattedBody interfaces.UpdateUserEmail
 	err := json.Unmarshal(body, &formattedBody)
 	helpers.HandleErr(err)
 	// check pass function
 	if isUserPresent(formattedBody.Email) {
-		updateUserDetails()
+		updateEmail(formattedBody.NewEmail, formattedBody.Email)
 	} else {
 		w.WriteHeader(http.StatusForbidden)
 	}
 
 }
 
-func updateUserDetails() {
+func updateEmail(newEmail string, email string) {
+	db := helpers.ConnectDB()
+	var user interfaces.User
+	db.Where("email = ?", email).First(&user)
+	user.Email = newEmail
+	db.Save(user)
+
+}
+
+func updateUserBalance(w http.ResponseWriter, r *http.Request) {
+	body := readBody(r)
+	var formattedBody interfaces.UpdateUserBalance
+	err := json.Unmarshal(body, &formattedBody)
+	helpers.HandleErr(err)
+	// check pass function
+	if isUserPresent(formattedBody.Email) {
+		updateBalance(formattedBody.Email, formattedBody.TopUp)
+	} else {
+		w.WriteHeader(http.StatusForbidden)
+	}
+
+}
+
+func createTransaction(w http.ResponseWriter, r *http.Request) {
+	body := readBody(r)
+	var formattedBody interfaces.UpdateUserBalance
+	err := json.Unmarshal(body, &formattedBody)
+	helpers.HandleErr(err)
+	// check pass function
+	if isUserPresent(formattedBody.Email) {
+		updateBalance(formattedBody.Email, formattedBody.TopUp)
+	} else {
+		w.WriteHeader(http.StatusForbidden)
+	}
+
+}
+
+func updateBalance(email string, amount int) {
+	db := helpers.ConnectDB()
+	var user interfaces.User
+	db.Where("email = ?", email).First(&user)
+	startBalance := user.Balence
+	topUpBalance := startBalance + amount
+	user.Balence = topUpBalance
+
+	db.Save(user)
 
 }
 
@@ -140,6 +174,9 @@ func StartApi() {
 	router.HandleFunc("/", index)
 	router.HandleFunc("/login", loginUser).Methods("POST")
 	router.HandleFunc("/register", registerUser).Methods("POST")
+	router.HandleFunc("/updateEmail", updateUserEmail).Methods("PUT")
+	router.HandleFunc("/updateBalance", updateUserEmail).Methods("PUT")
+
 	fmt.Println("App is working on port :3000")
 	log.Fatal(http.ListenAndServe(":3000", router))
 }

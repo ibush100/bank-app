@@ -25,3 +25,17 @@ type ResponseUser struct {
 	Username string
 	Email    string
 }
+
+type UpdateUserEmail struct {
+	Username string
+	Password string
+	Email    string
+	NewEmail string
+}
+
+type UpdateUserBalance struct {
+	Username string
+	Password string
+	Email    string
+	TopUp    int
+}
