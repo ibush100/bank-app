@@ -39,3 +39,9 @@ type UpdateUserBalance struct {
 	Email    string
 	TopUp    int
 }
+
+type Transaction struct {
+	PayeeEmail string
+	PayorEmail string
+	Amount     int
+}

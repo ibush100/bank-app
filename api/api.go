@@ -3,6 +3,7 @@ package api
 import (
 	"bank-app/helpers"
 	"bank-app/interfaces"
+	"bank-app/transaction"
 	"bank-app/users"
 	"encoding/json"
 	"fmt"
@@ -72,7 +73,7 @@ func updateUserBalance(w http.ResponseWriter, r *http.Request) {
 	helpers.HandleErr(err)
 	// check pass function
 	if isUserPresent(formattedBody.Email) {
-		updateBalance(formattedBody.Email, formattedBody.TopUp)
+		transaction.TopUpBalance(formattedBody.Email, formattedBody.TopUp)
 	} else {
 		w.WriteHeader(http.StatusForbidden)
 	}
@@ -81,27 +82,15 @@ func updateUserBalance(w http.ResponseWriter, r *http.Request) {
 
 func createTransaction(w http.ResponseWriter, r *http.Request) {
 	body := readBody(r)
-	var formattedBody interfaces.UpdateUserBalance
+	var formattedBody interfaces.Transaction
 	err := json.Unmarshal(body, &formattedBody)
 	helpers.HandleErr(err)
 	// check pass function
-	if isUserPresent(formattedBody.Email) {
-		updateBalance(formattedBody.Email, formattedBody.TopUp)
+	if isUserPresent(formattedBody.PayorEmail) && isUserPresent(formattedBody.PayeeEmail) {
+		transaction.CreateTransaction(formattedBody.PayeeEmail, formattedBody.PayorEmail, formattedBody.Amount)
 	} else {
 		w.WriteHeader(http.StatusForbidden)
 	}
-
-}
-
-func updateBalance(email string, amount int) {
-	db := helpers.ConnectDB()
-	var user interfaces.User
-	db.Where("email = ?", email).First(&user)
-	startBalance := user.Balence
-	topUpBalance := startBalance + amount
-	user.Balence = topUpBalance
-
-	db.Save(user)
 
 }
 

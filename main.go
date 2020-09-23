@@ -6,6 +6,9 @@ import (
 	_ "github.com/jinzhu/gorm/dialects/postgres"
 )
 
+/* TODO
+redo if/else to return happy path and have conditional handle non - error early
+*/
 func main() {
 	// connectDB()
 	// migrate()
