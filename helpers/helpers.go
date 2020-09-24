@@ -2,6 +2,7 @@ package helpers
 
 import (
 	"encoding/json"
+	"io/ioutil"
 	"log"
 	"net/http"
 
@@ -17,6 +18,13 @@ func HandleErr(err error) {
 	if err != nil {
 		panic(err.Error())
 	}
+}
+
+func ReadBody(r *http.Request) []byte {
+	body, err := ioutil.ReadAll(r.Body)
+	HandleErr(err)
+
+	return body
 }
 
 func HashAndSalt(password []byte) string {

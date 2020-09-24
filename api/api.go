@@ -7,7 +7,6 @@ import (
 	"bank-app/users"
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
 	"log"
 	"net/http"
 	"time"
@@ -18,18 +17,8 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
-// TODO
-// swtich marshal to encoder
-
-func readBody(r *http.Request) []byte {
-	body, err := ioutil.ReadAll(r.Body)
-	helpers.HandleErr(err)
-
-	return body
-}
-
 func registerUser(w http.ResponseWriter, r *http.Request) {
-	body := readBody(r)
+	body := helpers.ReadBody(r)
 
 	var fomattedUser interfaces.Register
 	err := json.Unmarshal(body, &fomattedUser)
@@ -44,12 +33,12 @@ func registerUser(w http.ResponseWriter, r *http.Request) {
 }
 
 func updateUserEmail(w http.ResponseWriter, r *http.Request) {
-	body := readBody(r)
+	body := helpers.ReadBody(r)
 	var formattedBody interfaces.UpdateUserEmail
 	err := json.Unmarshal(body, &formattedBody)
 	helpers.HandleErr(err)
 	// check pass function
-	if isUserPresent(formattedBody.Email) {
+	if users.IsUserPresent(formattedBody.Email) {
 		updateEmail(formattedBody.NewEmail, formattedBody.Email)
 	} else {
 		w.WriteHeader(http.StatusForbidden)
@@ -67,27 +56,13 @@ func updateEmail(newEmail string, email string) {
 }
 
 func updateUserBalance(w http.ResponseWriter, r *http.Request) {
-	body := readBody(r)
+	body := helpers.ReadBody(r)
 	var formattedBody interfaces.UpdateUserBalance
 	err := json.Unmarshal(body, &formattedBody)
 	helpers.HandleErr(err)
 	// check pass function
-	if isUserPresent(formattedBody.Email) {
+	if users.IsUserPresent(formattedBody.Email) {
 		transaction.TopUpBalance(formattedBody.Email, formattedBody.TopUp)
-	} else {
-		w.WriteHeader(http.StatusForbidden)
-	}
-
-}
-
-func createTransaction(w http.ResponseWriter, r *http.Request) {
-	body := readBody(r)
-	var formattedBody interfaces.Transaction
-	err := json.Unmarshal(body, &formattedBody)
-	helpers.HandleErr(err)
-	// check pass function
-	if isUserPresent(formattedBody.PayorEmail) && isUserPresent(formattedBody.PayeeEmail) {
-		transaction.CreateTransaction(formattedBody.PayeeEmail, formattedBody.PayorEmail, formattedBody.Amount)
 	} else {
 		w.WriteHeader(http.StatusForbidden)
 	}
@@ -101,7 +76,7 @@ func index(w http.ResponseWriter, r *http.Request) {
 
 // this will break until you put bcryt stuff in
 func loginUser(w http.ResponseWriter, r *http.Request) {
-	body := readBody(r)
+	body := helpers.ReadBody(r)
 	var formattedBody interfaces.User
 	err := json.Unmarshal(body, &formattedBody)
 	helpers.HandleErr(err)
@@ -115,23 +90,6 @@ func loginUser(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusForbidden)
 	}
 
-}
-
-func isUserPresent(email string) bool {
-	userResult := FindUser(email)
-	if userResult <= 0 {
-		return false
-	}
-	return true
-}
-
-func FindUser(email string) uint {
-	db := helpers.ConnectDB()
-	var user interfaces.User
-	//db.Table("users").Select("user_id").Where("email = ? ", email).First(&user.ID)
-	db.Where("email = ?", email).First(&user)
-
-	return user.ID
 }
 
 func PrepareToken(ID uint) string {
@@ -163,6 +121,7 @@ func StartApi() {
 	router.HandleFunc("/", index)
 	router.HandleFunc("/login", loginUser).Methods("POST")
 	router.HandleFunc("/register", registerUser).Methods("POST")
+	router.HandleFunc("/transaction", transaction.CreateTransactionHandler).Methods("Post")
 	router.HandleFunc("/updateEmail", updateUserEmail).Methods("PUT")
 	router.HandleFunc("/updateBalance", updateUserEmail).Methods("PUT")
 

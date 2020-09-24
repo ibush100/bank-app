@@ -17,3 +17,20 @@ func CreateUser(username string, email string, password string) (interfaces.User
 	// need to clean up returning true
 	return user, true
 }
+
+func IsUserPresent(email string) bool {
+	userResult := FindUser(email)
+	if userResult <= 0 {
+		return false
+	}
+	return true
+}
+
+func FindUser(email string) uint {
+	db := helpers.ConnectDB()
+	var user interfaces.User
+	//db.Table("users").Select("user_id").Where("email = ? ", email).First(&user.ID)
+	db.Where("email = ?", email).First(&user)
+
+	return user.ID
+}
