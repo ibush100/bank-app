@@ -1,7 +1,7 @@
 package transaction
 
 import (
-	"bank-app/helpers"
+	"bank-app/database"
 	"bank-app/interfaces"
 
 	_ "github.com/jinzhu/gorm/dialects/postgres"
@@ -24,31 +24,15 @@ func addBalance(payee interfaces.User, amount int) {
 }
 
 func TopUpBalance(email string, amount int) {
-	db := helpers.ConnectDB()
-	var user interfaces.User
-	db.Where("email = ?", email).First(&user)
-	startBalance := user.Balence
-	topUpBalance := startBalance + amount
-	user.Balence = topUpBalance
-
-	db.Save(user)
+	database.TopUpAccountBalance(email, amount)
 }
 
 func setBalance(email string, newBalance int) {
-	db := helpers.ConnectDB()
-	var user interfaces.User
-	db.Where("email = ?", email).First(&user)
-	user.Balence = newBalance
-
-	db.Save(user)
+	database.SetBalance(email, newBalance)
 }
 
 func FindPayeeAndPayor(payeeEmail string, payorEmail string) (interfaces.User, interfaces.User) {
-	db := helpers.ConnectDB()
-	var payee interfaces.User
-	var payor interfaces.User
-	db.Where("email = ?", payeeEmail).First(&payee)
-	db.Where("email = ?", payorEmail).First(&payor)
+	payee, payor := database.GetPayeeAndPayor(payeeEmail, payorEmail)
 
 	return payee, payor
 }

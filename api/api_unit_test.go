@@ -1,6 +1,7 @@
 package api
 
 import (
+	"bank-app/database"
 	"bank-app/interfaces"
 	"bank-app/users"
 	"testing"
@@ -22,7 +23,7 @@ func TestCreateUser(t *testing.T) {
 
 func TestFindUser(t *testing.T) {
 	assert := assert.New(t)
-	result := FindUser("email@example.com")
+	result := database.FindUser("email@example.com")
 	assert.True(result > 1)
 }
 
