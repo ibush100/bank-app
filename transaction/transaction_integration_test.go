@@ -12,29 +12,25 @@ import (
 )
 
 type transaction struct {
-	payorEmail string
-	PayeeEmail int
-	Password   string
+	PayorEmail string
+	PayeeEmail string
+	Amount     int
 }
 
-//Need to work on this
 func TestCreateTransactionIntegration(t *testing.T) {
 
-	CreateTransaction("fresh@example.com", "email@example.com", 100)
 	payee, payor := FindPayeeAndPayor("fresh@example.com", "email@example.com")
-	assert.Equal(t, payee.Balence, 200, "that didn't work")
-	assert.Equal(t, payor.Balence, 100, "that didn't work")
-
-	user := UpdateEmail{Email: "new@example.com", NewEmail: "fresh@example.com"}
-	requestByte, _ := json.Marshal(user)
+	setBalance(payee.Email, 100)
+	setBalance(payor.Email, 200)
+	transaction := transaction{payee.Email, payor.Email, 100}
+	requestByte, _ := json.Marshal(transaction)
 	requestReader := bytes.NewReader(requestByte)
-	req, err := http.NewRequest("PUT", "/updateEmail", requestReader)
+	req, err := http.NewRequest("POST", "/transaction", requestReader)
 	if err != nil {
 		helpers.HandleErr(err)
 	}
 	rr := httptest.NewRecorder()
-	handler := http.HandlerFunc(updateUserEmail)
+	handler := http.HandlerFunc(CreateTransactionHandler)
 	handler.ServeHTTP(rr, req)
 	assert.Equal(t, 200, rr.Code, "that didn't work")
-
 }

@@ -15,12 +15,13 @@ func RegisterUser(w http.ResponseWriter, r *http.Request) {
 	err := json.Unmarshal(body, &fomattedUser)
 	helpers.HandleErr(err)
 	registerUser, result := CreateUser(fomattedUser.Username, fomattedUser.Email, fomattedUser.Password)
-	if result {
-		w.WriteHeader(http.StatusCreated)
-		helpers.WriteToJson(w, registerUser)
-	} else {
+	if !result {
 		w.WriteHeader(http.StatusNotFound)
 	}
+
+	w.WriteHeader(http.StatusCreated)
+	helpers.WriteToJson(w, registerUser)
+
 }
 
 func UpdateUserEmail(w http.ResponseWriter, r *http.Request) {

@@ -53,6 +53,14 @@ func FindUser(email string) uint {
 	return user.ID
 }
 
+func GetUserBalance(email string) int {
+	db := ConnectDB()
+	var user interfaces.User
+	db.Where("email = ?", email).First(&user)
+
+	return user.Balence
+}
+
 func IsUserPresent(email string) bool {
 	userResult := FindUser(email)
 	if userResult <= 0 {
