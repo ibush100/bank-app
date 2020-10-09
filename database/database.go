@@ -2,6 +2,7 @@ package database
 
 import (
 	"bank-app/helpers"
+	"bank-app/interfaces"
 	"bank-app/users"
 
 	"github.com/google/uuid"
@@ -16,18 +17,17 @@ func ConnectDB() *gorm.DB {
 
 func SetBalance(email string, newBalance int) {
 	db := ConnectDB()
-	var user users.User
+	var user interfaces.User
 	db.Where("email = ?", email).First(&user)
 	user.Balence = newBalance
 
 	db.Save(user)
 }
 
-func GetPayeeAndPayor(payeeEmail string, payorEmail string) (users.User, 
-	.User) {
+func GetPayeeAndPayor(payeeEmail string, payorEmail string) (interfaces.User, interfaces.User) {
 	db := ConnectDB()
-	var payee users.User
-	var payor users.User
+	var payee interfaces.User
+	var payor interfaces.User
 	db.Where("email = ?", payeeEmail).First(&payee)
 	db.Where("email = ?", payorEmail).First(&payor)
 
@@ -70,12 +70,12 @@ func IsUserPresent(email string) bool {
 	return true
 }
 
-func CreateUser(username string, email string, password string) (users.User, bool) {
+func CreateUser(username string, email string, password string) (interfaces.User, bool) {
 	//will move uuid later
 	userID := uuid.Must(uuid.NewRandom())
 	user := users.User{UserID: userID, Username: username, Email: email, Password: password}
 	db := ConnectDB()
-	db.AutoMigrate(&users.User{})
+	db.AutoMigrate(&interfaces.User{})
 	db.Create(&user)
 	// need to clean up returning true
 	return user, true
