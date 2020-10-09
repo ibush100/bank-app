@@ -41,7 +41,7 @@ func UpdateUserEmail(w http.ResponseWriter, r *http.Request) {
 // this will break until you put bcryt stuff in
 func LoginUser(w http.ResponseWriter, r *http.Request) {
 	body := helpers.ReadBody(r)
-	var formattedBody users.User
+	var formattedBody interfaces.User
 	err := json.Unmarshal(body, &formattedBody)
 	helpers.HandleErr(err)
 

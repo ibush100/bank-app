@@ -1,4 +1,4 @@
-package users
+package interfaces
 
 import (
 	"github.com/google/uuid"
@@ -8,16 +8,16 @@ import (
 type User struct {
 	gorm.Model
 	UserID   uuid.UUID `gorm:"type:uuid;primary_key;"`
-	Email    string    `validate:"required"`
-	Username string    `validate:"required"`
-	Password string    `validate:"required"`
-	Balence  int       `validate:omitempty`
+	Email    string
+	Username string
+	Password string
+	Balence  int
 }
 
 type Register struct {
 	Username string
-	Email    string `validate:"required"`
-	Password string `validate:"required"`
+	Email    string
+	Password string
 }
 
 type ResponseUser struct {
@@ -27,8 +27,21 @@ type ResponseUser struct {
 }
 
 type UpdateUserEmail struct {
-	Username string `validate:"required"`
+	Username string
 	Password string
 	Email    string
 	NewEmail string
+}
+
+type UpdateUserBalance struct {
+	Username string
+	Password string
+	Email    string
+	TopUp    int
+}
+
+type Transaction struct {
+	PayeeEmail string
+	PayorEmail string
+	Amount     int
 }

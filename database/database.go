@@ -3,7 +3,6 @@ package database
 import (
 	"bank-app/helpers"
 	"bank-app/interfaces"
-	"bank-app/users"
 
 	"github.com/google/uuid"
 	"github.com/jinzhu/gorm"
@@ -36,7 +35,7 @@ func GetPayeeAndPayor(payeeEmail string, payorEmail string) (interfaces.User, in
 
 func TopUpAccountBalance(email string, amount int) {
 	db := ConnectDB()
-	var user users.User
+	var user interfaces.User
 	db.Where("email = ?", email).First(&user)
 	startBalance := user.Balence
 	topUpBalance := startBalance + amount
@@ -47,7 +46,7 @@ func TopUpAccountBalance(email string, amount int) {
 
 func FindUser(email string) uint {
 	db := ConnectDB()
-	var user users.User
+	var user interfaces.User
 	//db.Table("users").Select("user_id").Where("email = ? ", email).First(&user.ID)
 	db.Where("email = ?", email).First(&user)
 
@@ -56,7 +55,7 @@ func FindUser(email string) uint {
 
 func GetUserBalance(email string) int {
 	db := ConnectDB()
-	var user users.User
+	var user interfaces.User
 	db.Where("email = ?", email).First(&user)
 
 	return user.Balence
@@ -73,7 +72,7 @@ func IsUserPresent(email string) bool {
 func CreateUser(username string, email string, password string) (interfaces.User, bool) {
 	//will move uuid later
 	userID := uuid.Must(uuid.NewRandom())
-	user := users.User{UserID: userID, Username: username, Email: email, Password: password}
+	user := interfaces.User{UserID: userID, Username: username, Email: email, Password: password}
 	db := ConnectDB()
 	db.AutoMigrate(&interfaces.User{})
 	db.Create(&user)
@@ -83,7 +82,7 @@ func CreateUser(username string, email string, password string) (interfaces.User
 
 func UpdateEmail(newEmail string, email string) {
 	db := ConnectDB()
-	var user users.User
+	var user interfaces.User
 	db.Where("email = ?", email).First(&user)
 	user.Email = newEmail
 	db.Save(user)

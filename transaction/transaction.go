@@ -18,12 +18,12 @@ func CreateTransaction(payeeEmail string, payorEmail string, amount int) bool {
 	return true
 }
 
-func subtractBalance(payor users.User, amount int) {
+func subtractBalance(payor interfaces.User, amount int) {
 	payor.Balence = payor.Balence - amount
 	setBalance(payor.Email, payor.Balence)
 }
 
-func addBalance(payee users.User, amount int) {
+func addBalance(payee interfaces.User, amount int) {
 	payee.Balence = payee.Balence + amount
 	setBalance(payee.Email, payee.Balence)
 }
@@ -51,7 +51,7 @@ func checkUserBalance(email string, amount int) bool {
 	return true
 }
 
-func FindPayeeAndPayor(payeeEmail string, payorEmail string) (users.User, users.User) {
+func FindPayeeAndPayor(payeeEmail string, payorEmail string) (interfaces.User, interfaces.User) {
 	payee, payor := database.GetPayeeAndPayor(payeeEmail, payorEmail)
 
 	return payee, payor

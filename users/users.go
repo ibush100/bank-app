@@ -3,13 +3,14 @@ package users
 import (
 	"bank-app/database"
 	"bank-app/helpers"
+	"bank-app/interfaces"
 	"time"
 
 	"github.com/dgrijalva/jwt-go"
 	"golang.org/x/crypto/bcrypt"
 )
 
-func CreateUser(username string, email string, password string) (users.User, bool) {
+func CreateUser(username string, email string, password string) (interfaces.User, bool) {
 	passwordHash := helpers.HashAndSalt([]byte(password))
 	user, result := database.CreateUser(username, email, passwordHash)
 	// need to clean up returning true
@@ -30,7 +31,7 @@ func PrepareToken(ID uint) string {
 
 func checkPass(email string, password string) bool {
 	db := database.ConnectDB()
-	var user users.User
+	var user interfaces.User
 	db.Where("email = ?", email).First(&user)
 	passCheck := bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(password))
 	if passCheck == bcrypt.ErrMismatchedHashAndPassword {
