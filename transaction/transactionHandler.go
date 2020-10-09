@@ -3,14 +3,13 @@ package transaction
 import (
 	"bank-app/database"
 	"bank-app/helpers"
-	"bank-app/interfaces"
 	"encoding/json"
 	"net/http"
 )
 
 func CreateTransactionHandler(w http.ResponseWriter, r *http.Request) {
 	body := helpers.ReadBody(r)
-	var formattedBody interfaces.Transaction
+	var formattedBody Transaction
 	err := json.Unmarshal(body, &formattedBody)
 	helpers.HandleErr(err)
 	// check pass function
@@ -25,7 +24,7 @@ func CreateTransactionHandler(w http.ResponseWriter, r *http.Request) {
 
 func UpdateUserBalance(w http.ResponseWriter, r *http.Request) {
 	body := helpers.ReadBody(r)
-	var formattedBody interfaces.UpdateUserBalance
+	var formattedBody UpdateUserBalance
 	err := json.Unmarshal(body, &formattedBody)
 	helpers.HandleErr(err)
 	// check pass function

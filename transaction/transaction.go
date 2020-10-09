@@ -2,7 +2,7 @@ package transaction
 
 import (
 	"bank-app/database"
-	"bank-app/interfaces"
+	"bank-app/users"
 
 	_ "github.com/jinzhu/gorm/dialects/postgres"
 )
@@ -28,7 +28,6 @@ func addBalance(payee users.User, amount int) {
 	setBalance(payee.Email, payee.Balence)
 }
 
-// work out some other external transfer simulators https://github.com/moov-io/ach
 func TopUpBalance(email string, amount int) {
 	database.TopUpAccountBalance(email, amount)
 }
