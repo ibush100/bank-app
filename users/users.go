@@ -7,7 +7,6 @@ import (
 	"time"
 
 	"github.com/dgrijalva/jwt-go"
-	"golang.org/x/crypto/bcrypt"
 )
 
 func CreateUser(username string, email string, password string) (interfaces.User, bool) {
@@ -27,15 +26,4 @@ func PrepareToken(ID uint) string {
 	helpers.HandleErr(err)
 
 	return token
-}
-
-func checkPass(email string, password string) bool {
-	db := database.ConnectDB()
-	var user interfaces.User
-	db.Where("email = ?", email).First(&user)
-	passCheck := bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(password))
-	if passCheck == bcrypt.ErrMismatchedHashAndPassword {
-		return false
-	}
-	return true
 }

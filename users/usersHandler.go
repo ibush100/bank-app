@@ -45,13 +45,13 @@ func LoginUser(w http.ResponseWriter, r *http.Request) {
 	err := json.Unmarshal(body, &formattedBody)
 	helpers.HandleErr(err)
 
-	if checkPass(formattedBody.Email, formattedBody.Password) {
+	if !database.CheckPass(formattedBody.Email, formattedBody.Password) {
+		w.WriteHeader(http.StatusForbidden)
+	} else {
 		token := PrepareToken(formattedBody.ID)
 		w.WriteHeader(http.StatusCreated)
-		// create token
+		//create token
 		helpers.WriteToJson(w, token)
-	} else {
-		w.WriteHeader(http.StatusForbidden)
 	}
 
 }

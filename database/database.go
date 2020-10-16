@@ -6,6 +6,8 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/jinzhu/gorm"
+	_ "github.com/jinzhu/gorm/dialects/postgres"
+	"golang.org/x/crypto/bcrypt"
 )
 
 func ConnectDB() *gorm.DB {
@@ -87,4 +89,20 @@ func UpdateEmail(newEmail string, email string) {
 	user.Email = newEmail
 	db.Save(user)
 
+}
+
+func CheckPass(email string, password string) bool {
+	db := ConnectDB()
+	var user interfaces.User
+	db.Where("email = ?", email).First(&user)
+	passCheck := bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(password))
+
+	switch passCheck {
+	case bcrypt.ErrMismatchedHashAndPassword:
+		return false
+	case bcrypt.ErrHashTooShort:
+		return false
+	default:
+		return true
+	}
 }

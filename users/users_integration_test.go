@@ -17,9 +17,9 @@ type UpdateEmail struct {
 	Password string
 }
 
-type UpdateBalance struct {
+type user struct {
 	Email    string
-	TopUp    int
+	Username string
 	Password string
 }
 
@@ -52,7 +52,7 @@ func TestLoginUser(t *testing.T) {
 }
 
 func TestLoginUserWrongPassword(t *testing.T) {
-	user := user{Email: "fresh@example.com", Password: "passwd123"}
+	user := user{Email: "fh@example.com", Password: "passasdwd123"}
 	requestByte, _ := json.Marshal(user)
 	requestReader := bytes.NewReader(requestByte)
 	req, err := http.NewRequest("POST", "/login", requestReader)
@@ -79,16 +79,16 @@ func TestUpdateUserEmail(t *testing.T) {
 	assert.Equal(t, 200, rr.Code, "that didn't work")
 }
 
-func TestUpdateUserBalance(t *testing.T) {
-	user := UpdateBalance{Email: "fresh@example.com", TopUp: 100}
-	requestByte, _ := json.Marshal(user)
-	requestReader := bytes.NewReader(requestByte)
-	req, err := http.NewRequest("PUT", "/updateBalance", requestReader)
-	if err != nil {
-		helpers.HandleErr(err)
-	}
-	rr := httptest.NewRecorder()
-	handler := http.HandlerFunc(UpdateUserBalance)
-	handler.ServeHTTP(rr, req)
-	assert.Equal(t, 200, rr.Code, "that didn't work")
-}
+// func TestUpdateUserBalance(t *testing.T) {
+// 	user := UpdateBalance{Email: "fresh@example.com", TopUp: 100}
+// 	requestByte, _ := json.Marshal(user)
+// 	requestReader := bytes.NewReader(requestByte)
+// 	req, err := http.NewRequest("PUT", "/updateBalance", requestReader)
+// 	if err != nil {
+// 		helpers.HandleErr(err)
+// 	}
+// 	rr := httptest.NewRecorder()
+// 	handler := http.HandlerFunc(UpdateUserBalance)
+// 	handler.ServeHTTP(rr, req)
+// 	assert.Equal(t, 200, rr.Code, "that didn't work")
+// }
