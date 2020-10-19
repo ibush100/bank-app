@@ -6,17 +6,28 @@ import (
 	"bank-app/interfaces"
 	"encoding/json"
 	"net/http"
+
+	"github.com/go-playground/validator"
 )
 
 func RegisterUser(w http.ResponseWriter, r *http.Request) {
+	var result bool
 	body := helpers.ReadBody(r)
-
 	var fomattedUser interfaces.Register
+	validate := validator.New()
 	err := json.Unmarshal(body, &fomattedUser)
 	helpers.HandleErr(err)
-	registerUser, result := CreateUser(fomattedUser.Username, fomattedUser.Email, fomattedUser.Password)
-	if !result {
+	bodyError := validate.Struct(fomattedUser)
+	if bodyError != nil {
+		result = false
 		w.WriteHeader(http.StatusNotFound)
+		return
+	}
+
+	registerUser, result := CreateUser(fomattedUser.Username, fomattedUser.Email, fomattedUser.Password)
+	if result == false {
+		w.WriteHeader(http.StatusNotFound)
+		return
 	}
 
 	w.WriteHeader(http.StatusCreated)

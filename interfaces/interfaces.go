@@ -8,16 +8,16 @@ import (
 type User struct {
 	gorm.Model
 	UserID   uuid.UUID `gorm:"type:uuid;primary_key;"`
-	Email    string
+	Email    string    `validate:"required,email"`
 	Username string
-	Password string
+	Password string `validate:"required"`
 	Balence  int
 }
 
 type Register struct {
 	Username string
-	Email    string
-	Password string
+	Email    string `validate:"required,email"`
+	Password string `validate:"required"`
 }
 
 type ResponseUser struct {

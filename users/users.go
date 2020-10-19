@@ -10,8 +10,7 @@ import (
 )
 
 func CreateUser(username string, email string, password string) (interfaces.User, bool) {
-	passwordHash := helpers.HashAndSalt([]byte(password))
-	user, result := database.CreateUser(username, email, passwordHash)
+	user, result := database.CreateUser(username, email, password)
 	// need to clean up returning true
 	return user, result
 }

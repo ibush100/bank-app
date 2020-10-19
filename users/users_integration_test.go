@@ -24,7 +24,7 @@ type user struct {
 }
 
 func TestRegisterUser(t *testing.T) {
-	user := user{Email: "email@example.com", Username: "User", Password: "password123"}
+	user := user{Email: "email@example.com", Username: "User", Password: "password"}
 	requestByte, _ := json.Marshal(user)
 	requestReader := bytes.NewReader(requestByte)
 	req, err := http.NewRequest("POST", "/register", requestReader)
