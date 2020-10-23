@@ -37,20 +37,6 @@ func TestRegisterUser(t *testing.T) {
 	assert.Equal(t, 201, rr.Code, "that didn't work")
 }
 
-func TestRegisterUserCharCleaning(t *testing.T) {
-	user := user{Email: "email@example.com", Username: "User", Password: "password="}
-	requestByte, _ := json.Marshal(user)
-	requestReader := bytes.NewReader(requestByte)
-	req, err := http.NewRequest("POST", "/register", requestReader)
-	if err != nil {
-		helpers.HandleErr(err)
-	}
-	rr := httptest.NewRecorder()
-	handler := http.HandlerFunc(RegisterUser)
-	handler.ServeHTTP(rr, req)
-	assert.Equal(t, 201, rr.Code, "that didn't work")
-}
-
 func TestLoginUser(t *testing.T) {
 	user := user{Email: "fresh@example.com", Password: "password123"}
 	requestByte, _ := json.Marshal(user)
