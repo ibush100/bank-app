@@ -5,6 +5,7 @@ import (
 	"io/ioutil"
 	"log"
 	"net/http"
+	"regexp"
 
 	"golang.org/x/crypto/bcrypt"
 )
@@ -40,6 +41,12 @@ func WriteToJson(w http.ResponseWriter, i interface{}) {
 	}
 	w.Header().Add("Content-Type", "application/json; charset=utf-8")
 	w.Write(b)
+}
+
+func BlackList(str, chars string) string {
+	pattern := "[" + chars + "]+"
+	r, _ := regexp.Compile(pattern)
+	return r.ReplaceAllString(str, "")
 }
 
 func PanicHandler(next http.Handler) http.Handler {

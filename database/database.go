@@ -73,7 +73,8 @@ func IsUserPresent(email string) bool {
 
 func CreateUser(username string, email string, password string) (interfaces.User, bool) {
 	userID := uuid.Must(uuid.NewRandom())
-	passwordHash := helpers.HashAndSalt([]byte(password))
+	safePassword := helpers.BlackList(password, "=")
+	passwordHash := helpers.HashAndSalt([]byte(safePassword))
 	user := interfaces.User{UserID: userID, Username: username, Email: email, Password: passwordHash}
 	db := ConnectDB()
 	db.AutoMigrate(&interfaces.User{})
