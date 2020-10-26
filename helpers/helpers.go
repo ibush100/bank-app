@@ -43,8 +43,8 @@ func WriteToJson(w http.ResponseWriter, i interface{}) {
 	w.Write(b)
 }
 
-func BlackList(str, chars string) string {
-	pattern := "[" + chars + "]+"
+func BlackList(str string) string {
+	pattern := "[" + "=" + "*" + "]+"
 	r, _ := regexp.Compile(pattern)
 	return r.ReplaceAllString(str, "")
 }
