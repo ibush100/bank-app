@@ -2,6 +2,7 @@ package transaction
 
 import (
 	"bank-app/helpers"
+	"bank-app/users"
 	"bytes"
 	"encoding/json"
 	"net/http"
@@ -26,6 +27,8 @@ func TestCreateTransactionIntegration(t *testing.T) {
 	requestByte, _ := json.Marshal(transaction)
 	requestReader := bytes.NewReader(requestByte)
 	req, err := http.NewRequest("POST", "/transaction", requestReader)
+	token := users.PrepareToken()
+	req.Header.Set("x-token", token)
 	if err != nil {
 		helpers.HandleErr(err)
 	}
