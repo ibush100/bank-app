@@ -36,6 +36,13 @@ func RegisterUser(w http.ResponseWriter, r *http.Request) {
 }
 
 func UpdateUserEmail(w http.ResponseWriter, r *http.Request) {
+	token := r.Header.Get("x-token")
+	tokenResult := VerifyToken(token)
+	if !tokenResult {
+		w.WriteHeader(http.StatusForbidden)
+		return
+	}
+
 	body := helpers.ReadBody(r)
 	var formattedBody interfaces.UpdateUserEmail
 	err := json.Unmarshal(body, &formattedBody)
@@ -49,7 +56,6 @@ func UpdateUserEmail(w http.ResponseWriter, r *http.Request) {
 
 }
 
-// this will break until you put bcryt stuff in
 func LoginUser(w http.ResponseWriter, r *http.Request) {
 	body := helpers.ReadBody(r)
 	var formattedBody interfaces.User

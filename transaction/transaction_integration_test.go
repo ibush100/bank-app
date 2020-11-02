@@ -18,6 +18,13 @@ type transaction struct {
 	Amount     int
 }
 
+type UpdateUser struct {
+	Username string
+	Password string
+	Email    string
+	TopUp    int
+}
+
 func TestCreateTransactionIntegration(t *testing.T) {
 
 	payee, payor := FindPayeeAndPayor("fresh@example.com", "email@example.com")
@@ -34,6 +41,22 @@ func TestCreateTransactionIntegration(t *testing.T) {
 	}
 	rr := httptest.NewRecorder()
 	handler := http.HandlerFunc(CreateTransactionHandler)
+	handler.ServeHTTP(rr, req)
+	assert.Equal(t, 200, rr.Code, "that didn't work")
+}
+
+func TestUpdateUserBalance(t *testing.T) {
+	user := UpdateUser{Email: "resh@example.com", TopUp: 100}
+	requestByte, _ := json.Marshal(user)
+	requestReader := bytes.NewReader(requestByte)
+	req, err := http.NewRequest("PUT", "/updateBalance", requestReader)
+	token := users.PrepareToken()
+	req.Header.Set("x-token", token)
+	if err != nil {
+		helpers.HandleErr(err)
+	}
+	rr := httptest.NewRecorder()
+	handler := http.HandlerFunc(UpdateUserBalance)
 	handler.ServeHTTP(rr, req)
 	assert.Equal(t, 200, rr.Code, "that didn't work")
 }

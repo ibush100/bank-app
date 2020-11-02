@@ -25,7 +25,7 @@ func StartApi() {
 	router.HandleFunc("/register", users.RegisterUser).Methods("POST")
 	router.HandleFunc("/transaction", transaction.CreateTransactionHandler).Methods("Post")
 	router.HandleFunc("/updateEmail", users.UpdateUserEmail).Methods("PUT")
-	router.HandleFunc("/updateBalance", users.UpdateUserEmail).Methods("PUT")
+	router.HandleFunc("/updateBalance", transaction.UpdateUserBalance).Methods("PUT")
 
 	fmt.Println("App is working on port :3000")
 	log.Fatal(http.ListenAndServe(":3000", router))
