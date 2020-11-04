@@ -49,7 +49,6 @@ func TopUpAccountBalance(email string, amount int) {
 func FindUser(email string) uint {
 	db := ConnectDB()
 	var user interfaces.User
-	//db.Table("users").Select("user_id").Where("email = ? ", email).First(&user.ID)
 	db.Where("email = ?", email).First(&user)
 
 	return user.ID
