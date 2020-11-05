@@ -92,17 +92,3 @@ func TestUpdateUserEmail(t *testing.T) {
 	handler.ServeHTTP(rr, req)
 	assert.Equal(t, 200, rr.Code, "that didn't work")
 }
-
-// func TestUpdateUserBalance(t *testing.T) {
-// 	user := UpdateBalance{Email: "fresh@example.com", TopUp: 100}
-// 	requestByte, _ := json.Marshal(user)
-// 	requestReader := bytes.NewReader(requestByte)
-// 	req, err := http.NewRequest("PUT", "/updateBalance", requestReader)
-// 	if err != nil {
-// 		helpers.HandleErr(err)
-// 	}
-// 	rr := httptest.NewRecorder()
-// 	handler := http.HandlerFunc(UpdateUserBalance)
-// 	handler.ServeHTTP(rr, req)
-// 	assert.Equal(t, 200, rr.Code, "that didn't work")
-// }

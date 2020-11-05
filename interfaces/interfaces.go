@@ -10,7 +10,7 @@ type User struct {
 	UserID   uuid.UUID `gorm:"type:uuid;primary_key;"`
 	Email    string    `validate:"required,email"`
 	Username string
-	Password string `validate:"required"`
+	Password string
 	Balence  int
 }
 
@@ -23,25 +23,25 @@ type Register struct {
 type ResponseUser struct {
 	ID       uint
 	Username string
-	Email    string
+	Email    string `validate:"required,email"`
 }
 
 type UpdateUserEmail struct {
 	Username string
 	Password string
-	Email    string
-	NewEmail string
+	Email    string `validate:"required,email"`
+	NewEmail string `validate:"required,email"`
 }
 
 type UpdateUserBalance struct {
 	Username string
 	Password string
-	Email    string
+	Email    string `validate:"required,email"`
 	TopUp    int
 }
 
 type Transaction struct {
-	PayeeEmail string
-	PayorEmail string
+	PayeeEmail string `validate:"required,email"`
+	PayorEmail string `validate:"required,email"`
 	Amount     int
 }

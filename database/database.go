@@ -111,3 +111,10 @@ func CheckPass(email string, password string) bool {
 		return true
 	}
 }
+
+func DeleteUser(email string) {
+	db := ConnectDB()
+	var user interfaces.User
+	db.Where("email = ?", email).First(&user)
+	db.Delete(user)
+}
