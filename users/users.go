@@ -35,7 +35,6 @@ func VerifyToken(jwtToken string) bool {
 		return []byte("TokenPassword"), nil
 	})
 	helpers.HandleErr(err)
-	//	var userId, _ = strconv.ParseFloat(id, 8)
 	if !token.Valid {
 		return false
 	}

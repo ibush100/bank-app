@@ -72,3 +72,22 @@ func LoginUser(w http.ResponseWriter, r *http.Request) {
 	}
 
 }
+
+func DeleteUser(w http.ResponseWriter, r *http.Request) {
+	token := r.Header.Get("x-token")
+	tokenResult := VerifyToken(token)
+	if !tokenResult {
+		w.WriteHeader(http.StatusForbidden)
+		return
+	}
+	body := helpers.ReadBody(r)
+	var formattedBody interfaces.User
+	err := json.Unmarshal(body, &formattedBody)
+	helpers.HandleErr(err)
+	// check pass function
+	if database.IsUserPresent(formattedBody.Email) {
+		database.DeleteUser(formattedBody.Email)
+	} else {
+		w.WriteHeader(http.StatusForbidden)
+	}
+}
