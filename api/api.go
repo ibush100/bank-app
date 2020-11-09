@@ -23,7 +23,8 @@ func StartApi() {
 	router.HandleFunc("/", index)
 	router.HandleFunc("/login", users.LoginUser).Methods("POST")
 	router.HandleFunc("/register", users.RegisterUser).Methods("POST")
-	router.HandleFunc("/transaction", transaction.CreateTransactionHandler).Methods("Post")
+	router.HandleFunc("/delete", users.DeleteUser).Methods("DELETE")
+	router.HandleFunc("/transaction", transaction.CreateTransactionHandler).Methods("POST")
 	router.HandleFunc("/updateEmail", users.UpdateUserEmail).Methods("PUT")
 	router.HandleFunc("/updateBalance", transaction.UpdateUserBalance).Methods("PUT")
 
