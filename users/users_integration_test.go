@@ -52,7 +52,10 @@ func TestRegisterUserBlackListPassword(t *testing.T) {
 }
 
 func TestLoginUser(t *testing.T) {
-	user := user{Email: "fresh@example.com", Password: "password123"}
+	user, result := CreateUser("User", "email@example.com", "password")
+	if result == false {
+		assert.FailNow(t, "user was not created")
+	}
 	requestByte, _ := json.Marshal(user)
 	requestReader := bytes.NewReader(requestByte)
 	req, err := http.NewRequest("POST", "/login", requestReader)
