@@ -1,12 +1,15 @@
 package users
 
 import (
+	"bank-app/database"
 	"bank-app/helpers"
 	"bytes"
 	"encoding/json"
 	"net/http"
 	"net/http/httptest"
 	"testing"
+
+	"github.com/bxcodec/faker/v3"
 
 	"github.com/stretchr/testify/assert"
 )
@@ -52,10 +55,11 @@ func TestRegisterUserBlackListPassword(t *testing.T) {
 }
 
 func TestLoginUser(t *testing.T) {
-	user, result := CreateUser("User", "email@example.com", "password")
+	user, result := CreateUser(faker.Name(), faker.Email(), "password123")
 	if result == false {
 		assert.FailNow(t, "user was not created")
 	}
+	user.Password = "password123"
 	requestByte, _ := json.Marshal(user)
 	requestReader := bytes.NewReader(requestByte)
 	req, err := http.NewRequest("POST", "/login", requestReader)
@@ -66,6 +70,8 @@ func TestLoginUser(t *testing.T) {
 	handler := http.HandlerFunc(LoginUser)
 	handler.ServeHTTP(rr, req)
 	assert.Equal(t, 201, rr.Code, "that didn't work")
+
+	database.DeleteUser(user.Email)
 }
 
 func TestLoginUserWrongPassword(t *testing.T) {
