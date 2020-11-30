@@ -66,7 +66,7 @@ func LoginUser(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusForbidden)
 	} else {
 		token := PrepareToken()
-		w.WriteHeader(http.StatusCreated)
+		w.WriteHeader(http.StatusOK)
 		//create token
 		helpers.WriteToJson(w, token)
 	}

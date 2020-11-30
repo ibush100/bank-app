@@ -69,9 +69,9 @@ func TestLoginUser(t *testing.T) {
 	rr := httptest.NewRecorder()
 	handler := http.HandlerFunc(LoginUser)
 	handler.ServeHTTP(rr, req)
-	assert.Equal(t, 201, rr.Code, "that didn't work")
+	assert.Equal(t, 200, rr.Code, "that didn't work")
 
-	database.DeleteUser(user.Email)
+	database.UnscopedDeleteUser(user.Email)
 }
 
 func TestLoginUserWrongPassword(t *testing.T) {

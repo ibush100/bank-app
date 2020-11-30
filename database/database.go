@@ -118,3 +118,11 @@ func DeleteUser(email string) {
 	db.Where("email = ?", email).First(&user)
 	db.Delete(user)
 }
+
+// Only use durring testing for tear own
+func UnscopedDeleteUser(email string) {
+	db := ConnectDB()
+	var user interfaces.User
+	db.Where("email = ?", email).First(&user)
+	db.Unscoped().Delete(user)
+}
