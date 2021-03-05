@@ -30,7 +30,7 @@ func TestRegisterUser(t *testing.T) {
 	user := user{Email: "email@example.com", Username: "User", Password: "password"}
 	requestByte, _ := json.Marshal(user)
 	requestReader := bytes.NewReader(requestByte)
-	req, err := http.NewRequest("POST", "/register", requestReader)
+	req, err := http.NewRequest("POST", "/user", requestReader)
 	if err != nil {
 		helpers.HandleErr(err)
 	}
@@ -44,7 +44,7 @@ func TestRegisterUserBlackListPassword(t *testing.T) {
 	user := user{Email: "email@example.com", Username: "User", Password: "passwor*d="}
 	requestByte, _ := json.Marshal(user)
 	requestReader := bytes.NewReader(requestByte)
-	req, err := http.NewRequest("POST", "/register", requestReader)
+	req, err := http.NewRequest("POST", "/user", requestReader)
 	if err != nil {
 		helpers.HandleErr(err)
 	}
@@ -92,7 +92,7 @@ func TestUpdateUserEmail(t *testing.T) {
 	user := UpdateEmail{Email: "new@example.com", NewEmail: "fresh@example.com"}
 	requestByte, _ := json.Marshal(user)
 	requestReader := bytes.NewReader(requestByte)
-	req, err := http.NewRequest("PUT", "/updateEmail", requestReader)
+	req, err := http.NewRequest("PUT", "/user", requestReader)
 	if err != nil {
 		helpers.HandleErr(err)
 	}

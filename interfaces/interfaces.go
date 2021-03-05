@@ -45,3 +45,9 @@ type Transaction struct {
 	PayorEmail string `validate:"required,email"`
 	Amount     int
 }
+
+type Account struct {
+	OwnerID   uuid.UUID
+	Balance   int
+	Overdraft bool
+}

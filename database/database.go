@@ -81,9 +81,7 @@ func CreateUser(username string, email string, password string) (interfaces.User
 	passwordHash := helpers.HashAndSalt([]byte(safePassword))
 	user := interfaces.User{UserID: userID, Username: username, Email: email, Password: passwordHash}
 	db := ConnectDB()
-	//	db.AutoMigrate(&interfaces.User{})
 	db.Create(&user)
-	// need to clean up returning true
 	return user, true
 }
 

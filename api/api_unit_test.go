@@ -26,18 +26,3 @@ func TestFindUser(t *testing.T) {
 	result := database.FindUser("email@example.com")
 	assert.True(result > 1)
 }
-
-func TestPrepareToken(t *testing.T) {
-	assert := assert.New(t)
-	var id uint = 5124521
-	result := PrepareToken(id)
-	assert.NotNil(result)
-}
-
-func TestCheckPass(t *testing.T) {
-	assert := assert.New(t)
-	password := "password123"
-	email := "email@example.com"
-	result := checkPass(password, email)
-	assert.True(result)
-}

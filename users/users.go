@@ -27,7 +27,6 @@ func PrepareToken() string {
 	return token
 }
 
-//Need to figure this out - still working it out
 func VerifyToken(jwtToken string) bool {
 	cleanJWT := strings.Replace(jwtToken, "Bearer ", "", -1)
 	tokenData := jwt.MapClaims{}

@@ -63,7 +63,7 @@ func LoginUser(w http.ResponseWriter, r *http.Request) {
 	helpers.HandleErr(err)
 
 	if !database.CheckPass(formattedBody.Email, formattedBody.Password) {
-		w.WriteHeader(http.StatusForbidden)
+		w.WriteHeader(http.StatusUnauthorized)
 	} else {
 		token := PrepareToken()
 		w.WriteHeader(http.StatusOK)

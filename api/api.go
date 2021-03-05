@@ -22,10 +22,10 @@ func StartApi() {
 	router.Use(helpers.PanicHandler)
 	router.HandleFunc("/", index)
 	router.HandleFunc("/login", users.LoginUser).Methods("POST")
-	router.HandleFunc("/register", users.RegisterUser).Methods("POST")
-	router.HandleFunc("/delete", users.DeleteUser).Methods("DELETE")
+	router.HandleFunc("/user", users.RegisterUser).Methods("POST")
+	router.HandleFunc("/user", users.DeleteUser).Methods("DELETE")
+	router.HandleFunc("/user", users.UpdateUserEmail).Methods("PUT")
 	router.HandleFunc("/transaction", transaction.CreateTransactionHandler).Methods("POST")
-	router.HandleFunc("/updateEmail", users.UpdateUserEmail).Methods("PUT")
 	router.HandleFunc("/updateBalance", transaction.UpdateUserBalance).Methods("PUT")
 
 	fmt.Println("App is working on port :3000")
