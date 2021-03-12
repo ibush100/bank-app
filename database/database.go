@@ -19,16 +19,21 @@ func ConnectDB() *gorm.DB {
 func SetBalance(email string, newBalance int) {
 	db := ConnectDB()
 	var user interfaces.User
-	db.Where("email = ?", email).First(&user)
-	user.Account.Balance = newBalance
-
+	account := GetAccount(email)
+	account.Balance = newBalance
 	db.Save(user)
 }
 
 func CreateAccount(email string) interfaces.Account {
+	userID := FindUser(email)
+	account := interfaces.Account{OwnerID: userID}
+	db := ConnectDB()
+	db.Create(&account)
+	return account
+}
 
-	userID := validateUserID
-
+func GetAccount(email string) interfaces.Account {
+	userID := FindUser(email)
 	account := interfaces.Account{OwnerID: userID}
 	db := ConnectDB()
 	db.Create(&account)
@@ -47,13 +52,12 @@ func GetPayeeAndPayor(payeeEmail string, payorEmail string) (interfaces.User, in
 
 func TopUpAccountBalance(email string, amount int) {
 	db := ConnectDB()
-	var user interfaces.User
-	db.Where("email = ?", email).First(&user)
-	startBalance := user.Account.Balance
+	account := GetAccount(email)
+	startBalance := account.Balance
 	topUpBalance := startBalance + amount
-	user.Account.Balance = topUpBalance
+	account.Balance = topUpBalance
 
-	db.Save(user)
+	db.Save(account)
 }
 
 func FindUser(email string) uuid.UUID {
@@ -64,12 +68,25 @@ func FindUser(email string) uuid.UUID {
 	return user.UserID
 }
 
-func GetUserBalance(email string) int {
+func FindUserEmail(email string) string {
 	db := ConnectDB()
 	var user interfaces.User
 	db.Where("email = ?", email).First(&user)
+	return user.Email
+}
 
-	return user.Account.Balance
+func IsUserEmailAvailable(email string) bool {
+	db := ConnectDB()
+	var user interfaces.User
+	if result := db.Where("email = ?", email).First(&user); result.Error != nil {
+		return false
+	}
+	return true
+}
+
+func GetUserBalance(email string) int {
+	account := GetAccount(email)
+	return account.Balance
 }
 
 func IsUserPresent(email string) bool {
@@ -82,8 +99,8 @@ func IsUserPresent(email string) bool {
 
 func CreateUser(username string, email string, password string) (interfaces.User, bool) {
 	var result bool
-	userExists := IsUserPresent(email)
-	if userExists == true {
+	emailPresent := IsUserEmailAvailable(email)
+	if emailPresent == true {
 		result = false
 		return interfaces.User{}, result
 	}

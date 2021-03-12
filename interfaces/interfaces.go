@@ -12,7 +12,6 @@ type User struct {
 	Username string
 	Password string
 	Balence  int
-	Account  Account
 }
 
 type Register struct {

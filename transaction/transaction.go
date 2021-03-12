@@ -19,13 +19,17 @@ func CreateTransaction(payeeEmail string, payorEmail string, amount int) bool {
 }
 
 func subtractBalance(payor interfaces.User, amount int) {
-	payor.Balence = payor.Account.Balance - amount
-	setBalance(payor.Email, payor.Account.Balance)
+	account := database.GetAccount(payor.Email)
+	currentAmount := account.Balance
+	newBalance := currentAmount - amount
+	setBalance(payor.Email, newBalance)
 }
 
 func addBalance(payee interfaces.User, amount int) {
-	payee.Account.Balance = payee.Account.Balance + amount
-	setBalance(payee.Email, payee.Balence)
+	account := database.GetAccount(payee.Email)
+	currentAmount := account.Balance
+	newBalance := currentAmount - amount
+	setBalance(payee.Email, newBalance)
 }
 
 func TopUpBalance(email string, amount int) {

@@ -26,7 +26,7 @@ func RegisterUser(w http.ResponseWriter, r *http.Request) {
 
 	registerUser, result := CreateUser(fomattedUser.Username, fomattedUser.Email, fomattedUser.Password)
 	if result == false {
-		w.WriteHeader(http.StatusNotFound)
+		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
 
