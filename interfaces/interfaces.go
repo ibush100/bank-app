@@ -12,6 +12,7 @@ type User struct {
 	Username string
 	Password string
 	Balence  int
+	Account  Account
 }
 
 type Register struct {
@@ -47,6 +48,7 @@ type Transaction struct {
 }
 
 type Account struct {
+	gorm.Model
 	OwnerID   uuid.UUID
 	Balance   int
 	Overdraft bool

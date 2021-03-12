@@ -19,16 +19,15 @@ func CreateTransaction(payeeEmail string, payorEmail string, amount int) bool {
 }
 
 func subtractBalance(payor interfaces.User, amount int) {
-	payor.Balence = payor.Balence - amount
-	setBalance(payor.Email, payor.Balence)
+	payor.Balence = payor.Account.Balance - amount
+	setBalance(payor.Email, payor.Account.Balance)
 }
 
 func addBalance(payee interfaces.User, amount int) {
-	payee.Balence = payee.Balence + amount
+	payee.Account.Balance = payee.Account.Balance + amount
 	setBalance(payee.Email, payee.Balence)
 }
 
-// work out some other external transfer simulators https://github.com/moov-io/ach
 func TopUpBalance(email string, amount int) {
 	database.TopUpAccountBalance(email, amount)
 }

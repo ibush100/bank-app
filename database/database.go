@@ -20,9 +20,19 @@ func SetBalance(email string, newBalance int) {
 	db := ConnectDB()
 	var user interfaces.User
 	db.Where("email = ?", email).First(&user)
-	user.Balence = newBalance
+	user.Account.Balance = newBalance
 
 	db.Save(user)
+}
+
+func CreateAccount(email string) interfaces.Account {
+
+	userID := validateUserID
+
+	account := interfaces.Account{OwnerID: userID}
+	db := ConnectDB()
+	db.Create(&account)
+	return account
 }
 
 func GetPayeeAndPayor(payeeEmail string, payorEmail string) (interfaces.User, interfaces.User) {
@@ -39,19 +49,19 @@ func TopUpAccountBalance(email string, amount int) {
 	db := ConnectDB()
 	var user interfaces.User
 	db.Where("email = ?", email).First(&user)
-	startBalance := user.Balence
+	startBalance := user.Account.Balance
 	topUpBalance := startBalance + amount
-	user.Balence = topUpBalance
+	user.Account.Balance = topUpBalance
 
 	db.Save(user)
 }
 
-func FindUser(email string) uint {
+func FindUser(email string) uuid.UUID {
 	db := ConnectDB()
 	var user interfaces.User
 	db.Where("email = ?", email).First(&user)
 
-	return user.ID
+	return user.UserID
 }
 
 func GetUserBalance(email string) int {
@@ -59,12 +69,12 @@ func GetUserBalance(email string) int {
 	var user interfaces.User
 	db.Where("email = ?", email).First(&user)
 
-	return user.Balence
+	return user.Account.Balance
 }
 
 func IsUserPresent(email string) bool {
 	userResult := FindUser(email)
-	if userResult <= 0 {
+	if userResult != uuid.Nil {
 		return false
 	}
 	return true
@@ -72,6 +82,12 @@ func IsUserPresent(email string) bool {
 
 func CreateUser(username string, email string, password string) (interfaces.User, bool) {
 	var result bool
+	userExists := IsUserPresent(email)
+	if userExists == true {
+		result = false
+		return interfaces.User{}, result
+	}
+
 	userID := uuid.Must(uuid.NewRandom())
 	safePassword := helpers.BlackList(password)
 	if safePassword != password {

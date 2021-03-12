@@ -1,7 +1,6 @@
 package api
 
 import (
-	"bank-app/database"
 	"bank-app/interfaces"
 	"bank-app/users"
 	"testing"
@@ -19,10 +18,4 @@ func TestCreateUser(t *testing.T) {
 	//assert.EqualValuesf(addedUser.Password, user.Password, "User password should be returned")
 	assert.NotNil(addedUser.UserID)
 	assert.True(result)
-}
-
-func TestFindUser(t *testing.T) {
-	assert := assert.New(t)
-	result := database.FindUser("email@example.com")
-	assert.True(result > 1)
 }

@@ -12,8 +12,12 @@ import (
 
 func CreateUser(username string, email string, password string) (interfaces.User, bool) {
 	user, result := database.CreateUser(username, email, password)
-	// need to clean up returning true
+	CreateAccount(email)
 	return user, result
+}
+
+func CreateAccount(email string) {
+	database.CreateAccount(email)
 }
 
 func PrepareToken() string {
