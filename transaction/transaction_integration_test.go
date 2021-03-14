@@ -38,7 +38,6 @@ func TestCreateTransactionIntegration(t *testing.T) {
 	if resultPayor == false {
 		os.Exit(1)
 	}
-	//payee, payor := FindPayeeAndPayor("fresh@example.com", "email@example.com")
 	setBalance(payee.Email, 100)
 	setBalance(payor.Email, 200)
 	transaction := transaction{payee.Email, payor.Email, 100}

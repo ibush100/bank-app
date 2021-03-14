@@ -16,11 +16,14 @@ func ConnectDB() *gorm.DB {
 	return db
 }
 
-func SetBalance(email string, newBalance int) {
+func SetBalance(email string, newBalance int) bool {
 	db := ConnectDB()
 	account := GetAccount(email)
 	account.Balance = newBalance
-	db.Save(account)
+	if result := db.Save(account); result.Error != nil {
+		return false
+	}
+	return true
 }
 
 func CreateAccount(email string) interfaces.Account {
@@ -35,7 +38,7 @@ func GetAccount(email string) interfaces.Account {
 	userID := FindUser(email)
 	account := interfaces.Account{OwnerID: userID}
 	db := ConnectDB()
-	db.Where("OwnerID = ?", userID).First(&account)
+	db.Where("owner_id = ?", userID).First(&account)
 	return account
 }
 
@@ -49,14 +52,17 @@ func GetPayeeAndPayor(payeeEmail string, payorEmail string) (interfaces.User, in
 	return payee, payor
 }
 
-func TopUpAccountBalance(email string, amount int) {
+func TopUpAccountBalance(email string, amount int) bool {
 	db := ConnectDB()
 	account := GetAccount(email)
 	startBalance := account.Balance
 	topUpBalance := startBalance + amount
 	account.Balance = topUpBalance
 
-	db.Save(account)
+	if result := db.Save(account); result.Error != nil {
+		return false
+	}
+	return true
 }
 
 func FindUser(email string) uuid.UUID {

@@ -20,7 +20,6 @@ func CreateTransactionHandler(w http.ResponseWriter, r *http.Request) {
 	var formattedBody interfaces.Transaction
 	err := json.Unmarshal(body, &formattedBody)
 	helpers.HandleErr(err)
-	// check pass function
 	if !database.IsUserPresent(formattedBody.PayorEmail) || !database.IsUserPresent(formattedBody.PayeeEmail) {
 		w.WriteHeader(http.StatusForbidden)
 		return
@@ -30,6 +29,9 @@ func CreateTransactionHandler(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusForbidden)
 		return
 	}
+
+	w.WriteHeader(http.StatusCreated)
+	helpers.WriteToJson(w, "transaction succesful")
 }
 
 func UpdateUserBalance(w http.ResponseWriter, r *http.Request) {
@@ -44,10 +46,20 @@ func UpdateUserBalance(w http.ResponseWriter, r *http.Request) {
 	err := json.Unmarshal(body, &formattedBody)
 	helpers.HandleErr(err)
 	// check pass function
-	if database.IsUserPresent(formattedBody.Email) {
-		TopUpBalance(formattedBody.Email, formattedBody.TopUp)
-	} else {
+
+	userPresent := database.IsUserPresent(formattedBody.Email)
+
+	if userPresent == false {
 		w.WriteHeader(http.StatusForbidden)
+		return
 	}
 
+	topUpResult := TopUpBalance(formattedBody.Email, formattedBody.TopUp)
+	if topUpResult == false {
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+
+	w.WriteHeader(http.StatusCreated)
+	helpers.WriteToJson(w, "topUp Sucessful")
 }
