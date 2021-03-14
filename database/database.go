@@ -18,10 +18,9 @@ func ConnectDB() *gorm.DB {
 
 func SetBalance(email string, newBalance int) {
 	db := ConnectDB()
-	var user interfaces.User
 	account := GetAccount(email)
 	account.Balance = newBalance
-	db.Save(user)
+	db.Save(account)
 }
 
 func CreateAccount(email string) interfaces.Account {
@@ -36,7 +35,7 @@ func GetAccount(email string) interfaces.Account {
 	userID := FindUser(email)
 	account := interfaces.Account{OwnerID: userID}
 	db := ConnectDB()
-	db.Create(&account)
+	db.Where("OwnerID = ?", userID).First(&account)
 	return account
 }
 
@@ -91,7 +90,7 @@ func GetUserBalance(email string) int {
 
 func IsUserPresent(email string) bool {
 	userResult := FindUser(email)
-	if userResult != uuid.Nil {
+	if userResult == uuid.Nil {
 		return false
 	}
 	return true
@@ -114,7 +113,10 @@ func CreateUser(username string, email string, password string) (interfaces.User
 	passwordHash := helpers.HashAndSalt([]byte(safePassword))
 	user := interfaces.User{UserID: userID, Username: username, Email: email, Password: passwordHash}
 	db := ConnectDB()
-	db.Create(&user)
+	if err := db.Create(&user).Error; err != nil {
+		result = false
+		return interfaces.User{}, result
+	}
 	return user, true
 }
 
