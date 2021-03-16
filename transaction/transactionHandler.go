@@ -45,7 +45,6 @@ func UpdateUserBalance(w http.ResponseWriter, r *http.Request) {
 	var formattedBody interfaces.UpdateUserBalance
 	err := json.Unmarshal(body, &formattedBody)
 	helpers.HandleErr(err)
-	// check pass function
 
 	userPresent := database.IsUserPresent(formattedBody.Email)
 

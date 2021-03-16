@@ -12,6 +12,14 @@ func CreateTransaction(payeeEmail string, payorEmail string, amount int) bool {
 	if !checkUserBalance(payorEmail, amount) {
 		return false
 	}
+
+	if payee.UserID == payor.UserID {
+		return false
+	}
+
+	if amount < 0 {
+		return false
+	}
 	subtractBalance(payor, amount)
 	addBalance(payee, amount)
 

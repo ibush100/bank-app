@@ -32,3 +32,51 @@ func TestCreateTransaction(t *testing.T) {
 	assert.Equal(t, payorAccount.Balance, 100, "that didn't work")
 
 }
+
+func TestPayeeAndPayorMayNotBeTheSame(t *testing.T) {
+
+	payee, resultPayee := users.CreateUser("asdf", faker.Email(), "1234")
+	if resultPayee == false {
+		os.Exit(1)
+	}
+
+	setBalance(payee.Email, 100)
+
+	result := CreateTransaction(payee.Email, payee.Email, 100)
+	assert.Equal(t, result, false, "payee that didn't work")
+
+}
+
+func TestPayorBalanceMustBeHighEnough(t *testing.T) {
+	payee, resultPayee := users.CreateUser("asdf", faker.Email(), "1234")
+	payor, resultPayor := users.CreateUser("asdf", faker.Email(), "1234")
+	if resultPayee == false {
+		os.Exit(1)
+	}
+	if resultPayor == false {
+		os.Exit(1)
+	}
+	setBalance(payee.Email, 100)
+	setBalance(payor.Email, 0)
+
+	result := CreateTransaction(payee.Email, payee.Email, 100)
+	assert.Equal(t, result, false, "payee that didn't work")
+
+}
+
+func TestTransactionMayNotBeZero(t *testing.T) {
+	payee, resultPayee := users.CreateUser("asdf", faker.Email(), "1234")
+	payor, resultPayor := users.CreateUser("asdf", faker.Email(), "1234")
+	if resultPayee == false {
+		os.Exit(1)
+	}
+	if resultPayor == false {
+		os.Exit(1)
+	}
+	setBalance(payee.Email, 100)
+	setBalance(payor.Email, 100)
+
+	result := CreateTransaction(payee.Email, payee.Email, 0)
+	assert.Equal(t, result, false, "payee that didn't work")
+
+}
