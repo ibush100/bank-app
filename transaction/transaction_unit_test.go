@@ -1,6 +1,7 @@
 package transaction
 
 import (
+	"bank-app/database"
 	"bank-app/users"
 	"os"
 	"testing"
@@ -22,9 +23,12 @@ func TestCreateTransaction(t *testing.T) {
 	setBalance(payee.Email, 100)
 	setBalance(payor.Email, 200)
 
+	CreateTransaction(payee.Email, payor.Email, 100)
 	//update because balance isn't being set in user table anymore
 	payeeRes, payorRes := FindPayeeAndPayor(payee.Email, payor.Email)
-	assert.Equal(t, payeeRes.Balence, int(100), "payee that didn't work")
-	assert.Equal(t, payorRes.Balence, 100, "that didn't work")
+	payeeAccount := database.GetAccount(payeeRes.Email)
+	payorAccount := database.GetAccount(payorRes.Email)
+	assert.Equal(t, payeeAccount.Balance, 200, "payee that didn't work")
+	assert.Equal(t, payorAccount.Balance, 100, "that didn't work")
 
 }
